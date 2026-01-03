@@ -1,5 +1,7 @@
+
 <!-- Breadcrumb.vue -->
 <template>
+  <!-- 面包屑导航组件 -->
   <div class="breadcrumb">
     <el-breadcrumb separator="/">
       <el-breadcrumb-item to="/Statistics">首页</el-breadcrumb-item>
