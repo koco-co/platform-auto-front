@@ -1,7 +1,7 @@
 <!--
  * @Author: Poco Ray
  * @Date: 2025-09-20 17:17:38
- * @LastEditTime: 2026-01-03 16:36:02
+ * @LastEditTime: 2026-01-05 21:09:08
  * @FilePath: /platform-auto-front/src/views/home/FMenu.vue
  * @Description: 侧边栏菜单组件，实现导航菜单功能
 -->
@@ -106,6 +106,18 @@ const asideMenus = [
         name: "用户管理", // 子菜单名称
         icon: "User", // 子菜单图标
         frontpath: "/userList", // 前端路由路径
+      },
+    ],
+  },
+  {
+    name: "接口自动化", // 菜单名称
+    icon: "Platform", // 菜单图标（Element Plus图标组件名）
+    child: [
+      // 子菜单数组
+      {
+        name: "项目管理", // 子菜单名称
+        icon: "Tickets", // 子菜单图标
+        frontpath: "/ApiProjectList", // 前端路由路径
       },
     ],
   },

@@ -1,7 +1,12 @@
-
-<!-- Breadcrumb.vue -->
+<!--
+ * @Author: Poco Ray
+ * @Date: 2025-08-15 18:49:12
+ * @LastEditTime: 2026-01-05 21:31:42
+ * @FilePath: /platform-auto-front/src/views/Breadcrumb.vue
+ * @Description: 面包屑导航组件, 用于显示当前页面的路径
+ *
+-->
 <template>
-  <!-- 面包屑导航组件 -->
   <div class="breadcrumb">
     <el-breadcrumb separator="/">
       <el-breadcrumb-item to="/Statistics">首页</el-breadcrumb-item>

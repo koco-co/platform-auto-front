@@ -1,7 +1,7 @@
 /*
  * @Author: Poco Ray
  * @Date: 2025-09-20 17:16:18
- * @LastEditTime: 2026-01-03 16:36:52
+ * @LastEditTime: 2026-01-05 21:17:04
  * @FilePath: /platform-auto-front/src/router/index.js
  * @Description:
  */
@@ -14,13 +14,16 @@ import Login from "~/views/login/login.vue";
 import NotFound from "../views/NotFound.vue"; // 导入404组件
 import About from "../views/pages/about.vue"; // 导入关于页面
 import Home from "../views/home/home.vue"; // 导入首页
+import Statistics from "../views/statistics/statistics.vue"; // 导入统计页面
 
-// 导入统计页面
-import Statistics from "../views/statistics/statistics.vue";
-
-// 导入对应的路由
+// 导入其它页面路由
+// 用户管理相关页面
 import userList from "~/views/users/userList.vue";
 import userForm from "~/views/users/userForm.vue";
+
+//接口自动化相关页面
+import ApiProjectForm from "../views/apitest/project/ApiProjectForm.vue";
+import ApiProjectList from "../views/apitest/project/ApiProjectList.vue";
 
 // 路由规则数组
 const routes = [
@@ -59,7 +62,21 @@ const routes = [
         path: "/userForm",
         component: userForm,
         meta: {
-          title: "用户表单",
+          title: "新增用户",
+        },
+      },
+      {
+        path: "/ApiProjectList",
+        component: ApiProjectList,
+        meta: {
+          title: "项目管理",
+        },
+      },
+      {
+        path: "/ApiProjectForm",
+        component: ApiProjectForm,
+        meta: {
+          title: "新增项目",
         },
       },
     ],
