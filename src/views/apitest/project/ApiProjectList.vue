@@ -1,3 +1,10 @@
+<!--
+ * @Author: Poco Ray
+ * @Date: 2026-01-05 21:05:48
+ * @LastEditTime: 2026-01-05 23:25:11
+ * @FilePath: /platform-auto-front/src/views/apitest/project/ApiProjectList.vue
+ * @Description: 接口自动化项目列表页面, 用于查询和删除项目信息
+-->
 <template lang="">
   <Breadcrumb />
   <!-- 搜索表单 - 提供用户筛选功能 -->

@@ -1,9 +1,9 @@
 /*
  * @Author: Poco Ray
  * @Date: 2024-06-03 17:59:10
- * @LastEditTime: 2026-01-05 21:22:00
+ * @LastEditTime: 2026-01-05 23:35:06
  * @FilePath: /platform-auto-front/src/views/apitest/project/ApiProject.js
- * @Description: 接口项目管理模块，包含接口项目相关信息
+ * @Description: 维护接口自动化项目管理模块的API接口
  */
 
 // 导入axios实例，用于发送HTTP请求

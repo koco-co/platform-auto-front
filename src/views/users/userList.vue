@@ -1,9 +1,9 @@
 <!--
  * @Author: Poco Ray
  * @Date: 2024-06-03 17:59:10
- * @LastEditTime: 2026-01-05 22:56:58
+ * @LastEditTime: 2026-01-05 23:25:48
  * @FilePath: /platform-auto-front/src/views/users/userList.vue
- * @Description: 用户列表页面组件，用于展示和管理用户信息
+ * @Description: 用户列表页面，用于查询和删除用户信息
 -->
 <template>
   <!-- 面包屑导航 - 显示当前页面路径 -->

@@ -1,9 +1,9 @@
 <!--
  * @Author: Poco Ray
  * @Date: 2024-06-03 17:59:10
- * @LastEditTime: 2026-01-03 17:17:54
+ * @LastEditTime: 2026-01-05 23:24:31
  * @FilePath: /platform-auto-front/src/views/users/userForm.vue
- * @Description: 用户表单页面组件，用于新增和编辑用户信息
+ * @Description: 用户详情页面，用于新增和编辑用户信息
 -->
 <template>
   <!-- 面包屑导航 - 显示当前页面路径 -->
@@ -50,22 +50,15 @@
 </template>
 
 <script lang="ts" setup>
-// 导入Vue的响应式API
-import { ref, reactive } from "vue";
-// 导入用户相关的API函数
-import { queryById, insertData, updateData } from "./user"; // 不同页面不同的接口
-// 导入Element Plus表单类型定义
-import type { FormInstance, FormRules } from "element-plus";
-// 导入Vue Router
-import { useRouter } from "vue-router";
-// 导入面包屑导航组件
-import Breadcrumb from "../Breadcrumb.vue"; // 面包屑导航，导入
+import { ref, reactive } from "vue"; // 导入Vue的响应式API
+import { queryById, insertData, updateData } from "./user"; // 导入用户相关的API函数, 不同页面不同的接口
+import type { FormInstance, FormRules } from "element-plus"; // 导入Element Plus表单类型定义
+import { useRouter } from "vue-router"; // 导入Vue Router
+import Breadcrumb from "../Breadcrumb.vue"; // 导入面包屑导航组件
 
-// 获取路由器实例
-const router = useRouter();
+const router = useRouter(); // 获取路由器实例
 
-// 表单实例引用 - 用于访问表单方法
-const ruleFormRef = ref<FormInstance>();
+const ruleFormRef = ref<FormInstance>(); // 表单实例引用 - 用于访问表单方法
 
 // 表单数据 - 定义表单字段
 const ruleForm = reactive({
