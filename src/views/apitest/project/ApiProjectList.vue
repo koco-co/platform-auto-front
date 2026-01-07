@@ -5,21 +5,12 @@
  * @FilePath: /platform-auto-front/src/views/apitest/project/ApiProjectList.vue
  * @Description: 接口自动化项目列表页面, 用于查询和删除项目信息
 -->
-<template lang="">
-  <Breadcrumb />
+<template>
+  <Breadcrumb/>
   <!-- 搜索表单 - 提供用户筛选功能 -->
-  <el-form
-    :inline="true"
-    :model="searchForm"
-    class="demo-form-inline"
-    @submit.prevent
-  >
+  <el-form :inline="true" :model="searchForm" class="demo-form-inline" @submit.prevent>
     <el-form-item label="项目名称">
-      <el-input
-        v-model="searchForm.projectName"
-        placeholder="根据项目名称筛选"
-        @keyup.enter="loadData()"
-      />
+      <el-input v-model="searchForm.projectName" placeholder="根据项目名称筛选" @keyup.enter="loadData()"/>
     </el-form-item>
     <el-row class="mb-4" type="flex" justify="end">
       <!-- 居右 type="flex" justify="end" -->
@@ -36,32 +27,20 @@
   <el-table :data="tableData" style="width: 100%" max-height="500">
     <!-- 动态生成表格列 - 根据columnList数组生成 -->
     <!-- show-overflow-tooltip="true" - 当内容过长时显示省略号，鼠标悬停显示完整内容 -->
-    <el-table-column
-      v-for="col in columnList"
-      :prop="col.prop"
-      :label="col.label"
-      :key="col.prop"
-      show-overflow-tooltip="true"
-    />
+    <el-table-column v-for="col in columnList" :prop="col.prop" :label="col.label" :key="col.prop"
+                     :show-overflow-tooltip="true"/>
     <!-- 操作列 - 包含编辑和删除按钮 -->
     <el-table-column fixed="right" label="操作">
       <template #default="scope">
         <!-- 编辑按钮 - 传递当前行索引，打开编辑表单 -->
-        <el-button
-          link
-          type="primary"
-          size="small"
-          @click.prevent="onDataForm(scope.$index)"
-        >
+        <el-button link type="primary" size="small" @click.prevent="onDataForm(scope.$index)">
           编辑
         </el-button>
+        <el-button link type="primary" size="small" @click.prevent="showDbBaseManage(scope.$index)">
+          数据库配置
+        </el-button>
         <!-- 删除按钮 - 传递当前行索引，执行删除操作 -->
-        <el-button
-          link
-          type="primary"
-          size="small"
-          @click.prevent="onDelete(scope.$index)"
-        >
+        <el-button link type="primary" size="small" @click.prevent="onDelete(scope.$index)">
           删除
         </el-button>
       </template>
@@ -72,82 +51,112 @@
   <div class="demo-pagination-block">
     <!-- 分页组件 -->
     <el-pagination
-      v-model:current-page="currentPage"
-      v-model:page-size="pageSize"
-      :page-sizes="[10, 20, 30, 50]"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="total"
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
+        v-model:current-page="currentPage"
+        v-model:page-size="pageSize"
+        :page-sizes="[10, 20, 30, 50]"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
     >
     </el-pagination>
     <!-- END 分页组件 -->
   </div>
+
+
+  <!-- 弹窗 - 增加功能：数据库配置 弹窗加载执行记录 -->
+  <el-dialog v-model="DbBaseManageDialogFormVisible" style="width: 1100px">
+    <el-form-item>
+      <!-- 数据库数据信息显示 -->
+      <el-table :data="DbBaseManageList" style="width: 100%" max-height="300">
+        <el-table-column prop="db_name" label="连接名称" style="width: 10%"/>
+        <el-table-column prop="ref_name" label="引用变量" style="width: 20%" :show-overflow-tooltip="true"/>
+        <el-table-column prop="db_info" label="数据库连接信息" style="width: 40%" :show-overflow-tooltip="true"/>
+        <el-table-column prop="is_enabled" label="是否启用" style="width: 10%" :show-overflow-tooltip="true">
+          <!--          <template #default="scope">-->
+          <!--            {{ scope.row.is_enabled === "0" ? '否' : scope.row.is_enabled === "1" ? '是' : '-' }}-->
+          <!--          </template>-->
+        </el-table-column>
+        <el-table-column prop="db_type" label="数据库类型" style="width: 10%" :show-overflow-tooltip="true"/>
+
+        <!--        <el-table-column label="操作" style="width: 5%" :show-overflow-tooltip="true">-->
+        <!--          <template #default="scope">-->
+        <!--            <el-button link type="primary" size="small" @click.prevent="upDataDbinfo(scope.$index)">修改是否启动-->
+        <!--            </el-button>-->
+        <!--            <el-button link type="primary" size="small" @click.prevent="onDeleteDb(scope.$index)">删除</el-button>-->
+        <!--          </template>-->
+        <!--        </el-table-column>-->
+      </el-table>
+
+
+      <!-- 数据库添加数据信息 -->
+      <!--      <div class="input-group" style="width: 100%">-->
+      <!--        <el-input v-model="ruleForm.name" placeholder="连接名" style="width: 15%"/>-->
+      <!--        <el-input v-model="ruleForm.ref_name" placeholder="引用变量" style="width: 15%"/>-->
+      <!--        <el-input v-model="ruleForm.db_info"-->
+      <!--                  placeholder="数据库连接信息，如：{host: 主机IP/服务器, port: 端口号, username: 用户名, password: 密码, database: 数据库名}"-->
+      <!--                  style="width: 30%"/>-->
+      <!--        <el-select v-model="ruleForm.is_enabled" placeholder="是否启用" style="width: 20%">-->
+      <!--          <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"/>-->
+      <!--        </el-select>-->
+      <!--        <el-select v-model="ruleForm.db_type" placeholder="数据库类型" style="width: 10%">-->
+      <!--          <el-option v-for="item in optionsDbType" :key="item.value" :label="item.label" :value="item.value"/>-->
+      <!--        </el-select>-->
+      <!--        <el-button style="width: 10%" type="primary" @click="onAddDbinfo">添加</el-button>-->
+      <!--      </div>-->
+    </el-form-item>
+  </el-dialog>
 </template>
+
 <script lang="ts" setup>
-import { ref, reactive, onMounted } from "vue"; // 导入Vue的响应式API
-import { useRouter } from "vue-router"; // 导入Vue Router
-import { queryByPage, deleteData } from "./ApiProject"; // 导入接口项目管理相关的API函数, 不同页面不同的接口
+// 1. 其他功能拓展
+import {ref, onMounted} from "vue"; // 导入Vue的响应式API
+import {useRouter} from "vue-router"; // 导入Vue Router
+import {queryByPage, deleteData} from "./ApiProject"; // 导入接口项目管理相关的API函数, 不同页面不同的接口
 import Breadcrumb from "../../Breadcrumb.vue"; // 导入面包屑导航组件
 
 const router = useRouter();
 
-// 功能2：数据回显 - 定义表格列配置
-// Ref. https://element-plus.org/zh-CN/component/table.html#table-column-attributes
-const columnList = ref([
-  { prop: "id", label: "项目ID" }, // 项目ID列
-  { prop: "project_name", label: "项目名称" }, // 项目名称列
-  { prop: "project_desc", label: "项目描述" },
-  { prop: "create_time", label: "创建时间" }, // 创建时间列
-]);
-
-// 搜索表单数据
-const searchForm = ref({
-  projectName: "",
-});
-
-// 表格数据
-const tableData = ref([]);
-
-// 分页参数
+// 2. 分页参数
 const currentPage = ref(1); // 当前页码
 const pageSize = ref(10); // 每页显示数量
 const total = ref(0); // 总数据条数
 
-// 加载数据
-const loadData = async () => {
-  try {
-    // 确保页码至少为1
-    if (currentPage.value < 1) {
-      currentPage.value = 1;
-    }
+// 3. 搜索功能 - 筛选表单
+const searchForm = ref({projectName: "",});
 
-    // 构建查询参数
-    const params = {
-      ...searchForm.value,
-      pageNum: currentPage.value,
-      pageSize: pageSize.value,
-    };
+// 4. 项目列表
+// 表格列组件配置, Ref. https://element-plus.org/zh-CN/component/table.html#table-column-attributes
+const columnList = ref([
+  {prop: "id", label: "项目编号"},
+  {prop: "project_name", label: "项目名称"},
+  {prop: "project_desc", label: "项目描述"},
+  {prop: "create_time", label: "创建时间"},
+]);
 
-    // 调用API查询数据
-    const response = await queryByPage(params);
+// 5. 表格数据
+const tableData = ref([]);
 
-    // 根据响应结构更新表格数据 - 与用户列表保持一致
-    tableData.value = response.data.data || response.data.list || response.data;
-    // 更新总数据条数，用于分页组件
-    total.value =
-      response.data.total ||
-      (Array.isArray(response.data) ? response.data.length : 0);
+// 6. 加载页面数据
+const loadData = () => {
+  let searchData = searchForm;
+  searchData["pageNum"] = currentPage.value;
+  searchData["pageSize"] = pageSize.value;
 
-    console.log("项目数据加载成功:", response);
-    console.log("表格数据:", tableData.value);
-    console.log("总数:", total.value);
-  } catch (error) {
-    console.error("加载项目数据失败:", error);
-  }
+  queryByPage(searchData).then(
+      (res: { data: { data: never[]; total: number; msg: string } }) => {
+        tableData.value = res.data.data;
+        total.value = res.data.total;
+      }
+  );
 };
+// onMounted: Vue的生命周期钩子, 在组件挂载完成后执行, 通常用于加载数据.
+// 用于首次从后端加载列表数据(触发网络请求并填充tableData、total等变量)
+onMounted(() => {
+  loadData();
+});
 
-// 页大小变化处理函数
+// 7. 变更页大小
 const handleSizeChange = (val: number) => {
   console.log("页大小变化:" + val);
   pageSize.value = val; // 更新页大小
@@ -155,33 +164,15 @@ const handleSizeChange = (val: number) => {
   loadData(); // 重新加载数据
 };
 
-// 页码变化处理函数
+// 8. 变更页码
 const handleCurrentChange = (val: number) => {
   console.log("页码变化:" + val);
   currentPage.value = val; // 更新当前页码
   loadData(); // 重新加载数据
 };
 
-// 删除数据
-const onDelete = async (index: number) => {
-  try {
-    const row = tableData.value[index];
-    await deleteData(row.id);
-    console.log("删除成功");
-    // 重新加载数据
-    loadData();
-  } catch (error) {
-    console.error("删除失败:", error);
-  }
-};
-
-// 组件挂载时加载数据
-onMounted(() => {
-  loadData();
-});
-
-// 功能5：打开表单（编辑/新增）
-// Ref. https://router.vuejs.org/zh/guide/essentials/navigation.html
+// 9. 打开表单 （编辑/新增）
+// 关于路由页面跳转, Ref. https://router.vuejs.org/zh/guide/essentials/navigation.html
 const onDataForm = (index: number) => {
   let params_data = {};
   // 如果index >= 0，表示编辑现有数据，需要传递ID
@@ -196,10 +187,73 @@ const onDataForm = (index: number) => {
     query: params_data, // 传递查询参数
   });
 };
+
+// 10. 删除项目
+const onDelete = async (index: number) => {
+  try {
+    await deleteData(tableData.value[index].id);
+    console.log("删除成功");
+    loadData(); // 重新加载数据
+  } catch (error) {
+    console.error("删除失败:", error);
+  }
+};
+
+
+// ===================== 扩展: 数据库配置弹窗 =====================
+// 11. 增加功能：数据库相关的操作
+import {queryByPage as queryByPageList} from "./DbBaseManage.js"; // 不同页面不同的接口
+import {updateData} from "./DbBaseManage.js"; // 不同页面不同的接口
+import {insertData} from "./DbBaseManage.js"; // 不同页面不同的接口
+import {deleteData as deleteDbData} from "./DbBaseManage.js"; // 不同页面不同的接口
+
+const DbBaseManageList = ref([] as any[]); // 数据库数据列表数据
+const currentApiHistoryPage = ref(1) // 页码
+const DbBaseManageDialogFormVisible = ref(false) // 是否展示弹窗, 默认关闭
+const currentProjectId = ref(0) // 当前展示的执行记录关联的 ProjectId
+
+// 11-1 显示当前弹窗信息
+const showDbBaseManage = (index: number) => {
+  DbBaseManageDialogFormVisible.value = true
+  currentProjectId.value = tableData.value[index].id
+  console.log("当前添加数据库的ID", currentProjectId.value)
+  loadDbBaseManage(currentProjectId.value)
+}
+
+// 11-2 加载当中项目的数据
+
+
+// 11-3 数据库信息-提交表单-表单数据
+
+
+// 11-4 下拉列表的值-是否启动
+
+
+// 11-5 下拉列表的值-数据库类型
+
+
+// 11-6  添加-数据库数据
+
+
+// 11-7 修改-数据库数据
+
+
+// 11-8 删除数据库
+
+
+// ===================== END扩展: 数据库配置弹窗 =====================
 </script>
+
 <style scoped>
-/* 分页组件外边距 */
-.demo-pagination-block {
-  margin-top: 20px;
+.demo-pagination-block .demo-pagination-block {
+  margin-top: 10px; /* 设置元素的上外边距,根据需要调整间隔大小 */
+}
+
+.demo-pagination-block .demonstration {
+  margin-bottom: 16px; /* 设置元素的下外边距,根据需要调整间隔大小 */
+}
+
+.input-group {
+  margin-top: 16px; /* 设置元素的上外边距,根据需要调整间隔大小  */
 }
 </style>
