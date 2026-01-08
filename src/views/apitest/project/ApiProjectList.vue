@@ -29,17 +29,14 @@
     <!-- show-overflow-tooltip="true" - 当内容过长时显示省略号，鼠标悬停显示完整内容 -->
     <el-table-column v-for="col in columnList" :prop="col.prop" :label="col.label" :key="col.prop"
                      :show-overflow-tooltip="true"/>
-    <!-- 操作列 - 包含编辑和删除按钮 -->
     <el-table-column fixed="right" label="操作">
       <template #default="scope">
-        <!-- 编辑按钮 - 传递当前行索引，打开编辑表单 -->
         <el-button link type="primary" size="small" @click.prevent="onDataForm(scope.$index)">
           编辑
         </el-button>
         <el-button link type="primary" size="small" @click.prevent="showDbBaseManage(scope.$index)">
           数据库配置
         </el-button>
-        <!-- 删除按钮 - 传递当前行索引，执行删除操作 -->
         <el-button link type="primary" size="small" @click.prevent="onDelete(scope.$index)">
           删除
         </el-button>
@@ -90,27 +87,30 @@
 
 
       <!-- 数据库添加数据信息 -->
-      <!--      <div class="input-group" style="width: 100%">-->
-      <!--        <el-input v-model="ruleForm.name" placeholder="连接名" style="width: 15%"/>-->
-      <!--        <el-input v-model="ruleForm.ref_name" placeholder="引用变量" style="width: 15%"/>-->
-      <!--        <el-input v-model="ruleForm.db_info"-->
-      <!--                  placeholder="数据库连接信息，如：{host: 主机IP/服务器, port: 端口号, username: 用户名, password: 密码, database: 数据库名}"-->
-      <!--                  style="width: 30%"/>-->
-      <!--        <el-select v-model="ruleForm.is_enabled" placeholder="是否启用" style="width: 20%">-->
-      <!--          <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"/>-->
-      <!--        </el-select>-->
-      <!--        <el-select v-model="ruleForm.db_type" placeholder="数据库类型" style="width: 10%">-->
-      <!--          <el-option v-for="item in optionsDbType" :key="item.value" :label="item.label" :value="item.value"/>-->
-      <!--        </el-select>-->
-      <!--        <el-button style="width: 10%" type="primary" @click="onAddDbinfo">添加</el-button>-->
-      <!--      </div>-->
+      <div style="margin-top: 20px; font-weight: bold">
+        添加数据库配置
+      </div>
+      <el-form :model="DbBaseManageForm" label-width="120px" style="margin-top: 10px">
+        <el-input v-model="ruleForm.db_name" placeholder="连接名称" style="width: 15%"/>
+        <el-input v-model="ruleForm.ref_name" placeholder="引用变量" style="width: 15%"/>
+        <el-input v-model="ruleForm.db_info"
+                  placeholder="数据库连接信息，如：{host: 主机IP/服务器, port: 端口号, username: 用户名, password: 密码, database: 数据库名}"
+                  style="width: 30%"/>
+        <el-select v-model="ruleForm.is_enabled" placeholder="是否启用" style="width: 20%">
+          <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"/>
+        </el-select>
+        <el-select v-model="ruleForm.db_type" placeholder="数据库类型" style="width: 10%">
+          <el-option v-for="item in optionsDbType" :key="item.value" :label="item.label" :value="item.value"/>
+        </el-select>
+        <el-button style="width: 10%" type="primary" @click="onAddDbInfo">添加</el-button>
+      </el-form>
     </el-form-item>
   </el-dialog>
 </template>
 
 <script lang="ts" setup>
 // 1. 其他功能拓展
-import {ref, onMounted} from "vue"; // 导入Vue的响应式API
+import {ref, reactive, onMounted} from "vue"; // 导入Vue的响应式API
 import {useRouter} from "vue-router"; // 导入Vue Router
 import {queryByPage, deleteData} from "./ApiProject"; // 导入接口项目管理相关的API函数, 不同页面不同的接口
 import Breadcrumb from "../../Breadcrumb.vue"; // 导入面包屑导航组件
@@ -202,17 +202,10 @@ const onDelete = async (index: number) => {
 
 // ===================== 扩展: 数据库配置弹窗 =====================
 // 11. 增加功能：数据库相关的操作
-import {queryByPage as queryByPageList} from "./DbBaseManage.js"; // 不同页面不同的接口
-import {updateData} from "./DbBaseManage.js"; // 不同页面不同的接口
-import {insertData} from "./DbBaseManage.js"; // 不同页面不同的接口
-import {deleteData as deleteDbData} from "./DbBaseManage.js"; // 不同页面不同的接口
-
-const DbBaseManageList = ref([] as any[]); // 数据库数据列表数据
-const currentApiHistoryPage = ref(1) // 页码
 const DbBaseManageDialogFormVisible = ref(false) // 是否展示弹窗, 默认关闭
 const currentProjectId = ref(0) // 当前展示的执行记录关联的 ProjectId
 
-// 11-1 显示当前弹窗信息
+// 11-1 显示当前数据库配置弹窗信息
 const showDbBaseManage = (index: number) => {
   DbBaseManageDialogFormVisible.value = true
   currentProjectId.value = tableData.value[index].id
@@ -220,26 +213,86 @@ const showDbBaseManage = (index: number) => {
   loadDbBaseManage(currentProjectId.value)
 }
 
-// 11-2 加载当中项目的数据
+// 11-2 加载对应项目ID的数据库配置信息
+import {queryByPage as queryDbBaseManageByPage} from "./DbBaseManage.js";
 
+const DbBaseManageList = ref([] as any[]); // 数据库数据列表数据
+const currentApiHistoryPage = ref(1) // 页码
+const loadDbBaseManage = (index: number) => {
+  let searchData = {}
+  searchData["projectId"] = index
+  searchData["pageNum"] = currentApiHistoryPage.value
+  searchData["pageSize"] = 100
+  queryDbBaseManageByPage(searchData).then((res: { data: { data: never[]; total: number; msg: string } }) => {
+    DbBaseManageList.value = res.data.data
+  })
+}
 
 // 11-3 数据库信息-提交表单-表单数据
+const ruleForm = reactive({
+  db_id: 0,
+  project_id: currentProjectId.value,
+  db_name: "",
+  db_info: "",
+  ref_name: "",
+  db_type: "",
+  is_enabled: "1", // 默认值 1, 启用; 0: 禁用
+});
 
-
-// 11-4 下拉列表的值-是否启动
-
+// 11-4 下拉列表的值-是否启用
+const options = [
+  {
+    value: '1',
+    label: '是',
+  },
+  {
+    value: '0',
+    label: '否',
+  }
+]
 
 // 11-5 下拉列表的值-数据库类型
+const optionsDbType = [
+  {
+    value: 'MySQL',
+    label: 'MySQL',
+  },
+  {
+    value: 'Oracle',
+    label: 'Oracle',
+  }
+]
 
+// 11-6  添加-数据库连接信息
+import {insertData} from "./DbBaseManage.js";
 
-// 11-6  添加-数据库数据
+const onAddDbInfo = (index: number) => {
+  // 添加数据的时候，设置项目对应的值
+  ruleForm.project_id = currentProjectId.value
+
+  insertData(ruleForm).then((res: { data: { code: number; msg: string; }; }) => {
+    if (res.data.code == 200) {
+      loadDbBaseManage(currentProjectId.value);
+
+      // 设置字段都为空：
+      ruleForm.db_name = ""
+      ruleForm.ref_name = ""
+      ruleForm.db_info = ""
+      ruleForm.is_enabled = "1"
+      ruleForm.db_type = ""
+    }
+  });
+};
 
 
 // 11-7 修改-数据库数据
-
+import {updateData} from "./DbBaseManage.js"; // 不同页面不同的接口
 
 // 11-8 删除数据库
+import {deleteData as deleteDbData} from "./DbBaseManage.js"; // 不同页面不同的接口
 
+
+// TODO DbBaseManageForm
 
 // ===================== END扩展: 数据库配置弹窗 =====================
 </script>
