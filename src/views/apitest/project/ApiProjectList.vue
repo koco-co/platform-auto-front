@@ -70,39 +70,41 @@
         <el-table-column prop="ref_name" label="引用变量" style="width: 20%" :show-overflow-tooltip="true"/>
         <el-table-column prop="db_info" label="数据库连接信息" style="width: 40%" :show-overflow-tooltip="true"/>
         <el-table-column prop="is_enabled" label="是否启用" style="width: 10%" :show-overflow-tooltip="true">
-          <!--          <template #default="scope">-->
-          <!--            {{ scope.row.is_enabled === "0" ? '否' : scope.row.is_enabled === "1" ? '是' : '-' }}-->
-          <!--          </template>-->
+          <template #default="scope">
+            {{ scope.row.is_enabled === "0" ? '否' : scope.row.is_enabled === "1" ? '是' : '-' }}
+          </template>
         </el-table-column>
         <el-table-column prop="db_type" label="数据库类型" style="width: 10%" :show-overflow-tooltip="true"/>
-
-        <!--        <el-table-column label="操作" style="width: 5%" :show-overflow-tooltip="true">-->
-        <!--          <template #default="scope">-->
-        <!--            <el-button link type="primary" size="small" @click.prevent="upDataDbinfo(scope.$index)">修改是否启动-->
-        <!--            </el-button>-->
-        <!--            <el-button link type="primary" size="small" @click.prevent="onDeleteDb(scope.$index)">删除</el-button>-->
-        <!--          </template>-->
-        <!--        </el-table-column>-->
+        <el-table-column label="操作" style="width: 5%" :show-overflow-tooltip="true">
+          <template #default="scope">
+            <el-button link type="primary" size="small" @click.prevent="upDataDbInfo(scope.$index)">
+              是否启用
+            </el-button>
+            <el-button link type="primary" size="small" @click.prevent="onDeleteDb(scope.$index)">
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
       </el-table>
 
 
       <!-- 数据库添加数据信息 -->
-      <div style="margin-top: 20px; font-weight: bold">
-        添加数据库配置
+      <div style="margin-top: 20px; font-weight: bold; font-size: 16px">
+        添加数据库连接信息
       </div>
-      <el-form :model="DbBaseManageForm" label-width="120px" style="margin-top: 10px">
+      <el-form label-width="120px" style="margin-top: 20px">
         <el-input v-model="ruleForm.db_name" placeholder="连接名称" style="width: 15%"/>
         <el-input v-model="ruleForm.ref_name" placeholder="引用变量" style="width: 15%"/>
-        <el-input v-model="ruleForm.db_info"
-                  placeholder="数据库连接信息，如：{host: 主机IP/服务器, port: 端口号, username: 用户名, password: 密码, database: 数据库名}"
-                  style="width: 30%"/>
+        <el-input v-model="ruleForm.db_info" placeholder="数据库连接信息" style="width: 30%"/>
         <el-select v-model="ruleForm.is_enabled" placeholder="是否启用" style="width: 20%">
           <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"/>
         </el-select>
         <el-select v-model="ruleForm.db_type" placeholder="数据库类型" style="width: 10%">
           <el-option v-for="item in optionsDbType" :key="item.value" :label="item.label" :value="item.value"/>
         </el-select>
-        <el-button style="width: 10%" type="primary" @click="onAddDbInfo">添加</el-button>
+        <el-button style="width: 10%" type="primary" @click="onAddDbInfo">
+          添加
+        </el-button>
       </el-form>
     </el-form-item>
   </el-dialog>
@@ -209,7 +211,7 @@ const currentProjectId = ref(0) // 当前展示的执行记录关联的 ProjectI
 const showDbBaseManage = (index: number) => {
   DbBaseManageDialogFormVisible.value = true
   currentProjectId.value = tableData.value[index].id
-  console.log("当前添加数据库的ID", currentProjectId.value)
+  console.log("Current ProjectId:", currentProjectId.value)
   loadDbBaseManage(currentProjectId.value)
 }
 
@@ -220,7 +222,7 @@ const DbBaseManageList = ref([] as any[]); // 数据库数据列表数据
 const currentApiHistoryPage = ref(1) // 页码
 const loadDbBaseManage = (index: number) => {
   let searchData = {}
-  searchData["projectId"] = index
+  searchData["project_id"] = index
   searchData["pageNum"] = currentApiHistoryPage.value
   searchData["pageSize"] = 100
   queryDbBaseManageByPage(searchData).then((res: { data: { data: never[]; total: number; msg: string } }) => {
@@ -286,15 +288,46 @@ const onAddDbInfo = (index: number) => {
 
 
 // 11-7 修改-数据库数据
-import {updateData} from "./DbBaseManage.js"; // 不同页面不同的接口
+import {updateData} from "./DbBaseManage.js";
+
+// 修改的变量
+const upDataRuleForm = reactive({
+  db_id: 0,
+  project_id: currentProjectId.value,
+  db_name: "",
+  db_info: "",
+  ref_name: "",
+  db_type: "",
+  is_enabled: "1", // 默认值 1
+});
+
+// 修改的方法
+const upDataDbInfo = (index: number) => {
+  upDataRuleForm.db_id = DbBaseManageList.value[index].db_id
+  upDataRuleForm.project_id = DbBaseManageList.value[index].project_id
+  upDataRuleForm.db_name = DbBaseManageList.value[index].db_name
+  upDataRuleForm.ref_name = DbBaseManageList.value[index].ref_name
+  upDataRuleForm.db_info = DbBaseManageList.value[index].db_info
+  upDataRuleForm.db_type = DbBaseManageList.value[index].db_type
+  upDataRuleForm.is_enabled = DbBaseManageList.value[index].is_enabled === '1' ? '0' : '1';
+
+  updateData(upDataRuleForm).then((res: { data: { code: number; msg: string; }; }) => {
+    if (res.data.code == 200) {
+      loadDbBaseManage(currentProjectId.value)
+    }
+  });
+};
 
 // 11-8 删除数据库
-import {deleteData as deleteDbData} from "./DbBaseManage.js"; // 不同页面不同的接口
+import {deleteData as deleteDbData} from "./DbBaseManage.js";
 
+const onDeleteDb = (index: number) => {
+  deleteDbData(DbBaseManageList.value[index]["db_id"]).then((res: {}) => {
+    loadDbBaseManage(currentProjectId.value)
+  });
+};
 
-// TODO DbBaseManageForm
-
-// ===================== END扩展: 数据库配置弹窗 =====================
+// ===================== END 扩展: 数据库配置弹窗 =====================
 </script>
 
 <style scoped>

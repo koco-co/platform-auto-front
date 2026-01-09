@@ -10,7 +10,7 @@ export function queryByPage(data) {
 }
 
 export function queryById(id) {
-    return axios.get(`/${module_name}/queryById?id=${id}`)
+    return axios.get(`/${module_name}/queryById?db_id=${id}`)
 }
 
 
@@ -23,7 +23,7 @@ export function updateData(data) {
 }
 
 export function deleteData(id) {
-    return axios.delete(`/${module_name}/delete?id=${id}`)
+    return axios.delete(`/${module_name}/delete?db_id=${id}`)
 }
 
 // 拓展其他方法
